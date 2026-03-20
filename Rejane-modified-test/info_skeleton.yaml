@@ -1,0 +1,35 @@
+bodyparts:
+  - shoulder_r
+  - elbow_r
+  - right_wrist
+  - right_hand
+  - finger_r_1
+  - finger_r_2
+  - finger_r_3
+  - soft_pad_r
+  - left_hand
+  - soft_pad_l
+  - finger_l_1
+  - left_wrist
+  - muzzle
+skeleton:
+  - - shoulder_r
+    - elbow_r
+  - - elbow_r
+    - right_wrist
+  - - right_wrist
+    - right_hand
+  - - right_hand
+    - finger_r_1
+  - - right_hand
+    - finger_r_2
+  - - right_hand
+    - finger_r_3
+  - - right_hand
+    - soft_pad_r
+  - - left_wrist
+    - left_hand
+  - - left_hand
+    - finger_l_1
+  - - left_hand
+    - soft_pad_l
