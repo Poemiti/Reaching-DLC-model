@@ -195,7 +195,9 @@ with open(pytorch_config_path, 'r') as f:
     config_py = yaml.safe_load(f)
 config_py['runner']['optimizer']['type'] = optimizer
 config_py['train_settings']['epochs'] = n_epochs
-# config_py['snapshot'] = 50
+config_py['snapshot'] = 50
+config_py['train_settings']['batch_size'] = batch_size
+
 with open(pytorch_config_path, 'w') as f:
     yaml.safe_dump(config_py, f)
 
