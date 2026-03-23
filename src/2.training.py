@@ -8,8 +8,8 @@ import deeplabcut
 import shutil
 shutil.copy = shutil.copyfile
 
-import src.reaching_model_utils.video_utils as video_utils
-from src.reaching_model_utils.config import load_config
+import reaching_model_utils.video_utils as video_utils
+from reaching_model_utils.config import load_config
 
 # ------------------------------ verify gpu ------------------------------------
 

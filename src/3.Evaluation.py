@@ -1,7 +1,7 @@
 
 from pathlib import Path
 import pandas as pd
-import src.reaching_model_utils.video_utils as video_utils
+import reaching_model_utils.video_utils as video_utils
 import sys
 
 

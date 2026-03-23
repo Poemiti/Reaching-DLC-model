@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from src.reaching_model_utils.config import load_config
+from reaching_model_utils.config import load_config
 
 cft = load_config()
 

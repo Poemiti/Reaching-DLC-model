@@ -21,7 +21,7 @@ class Config(BaseModel):
     project: str
     experimenter: str
 
-    num_frames_per_video: str = Field(..., gt=0)
+    num_frames_per_video: int = Field(..., gt=0)
     extract_method: Literal["phash", "uniform"]
 
     optimizer: Literal["AdamW"]

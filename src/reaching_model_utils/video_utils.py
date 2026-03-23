@@ -10,6 +10,7 @@ from datetime import datetime
 import imagehash
 from PIL import Image
 import cv2
+import re
 
 
 
@@ -19,7 +20,7 @@ import cv2
 
 
 # uniform method
-def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, metadata: Dict[str, Any], labeling_dir: str):
+def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, labeling_dir: str):
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         print(f"Error opening video {video_path}")
@@ -79,63 +80,75 @@ def phash_distance(frame1, frame2):
     return h1 - h2
 
 
-
-def extract_frames_phash(video_path: Path, 
-                         output_dir: Path, 
-                         max_frames: int, 
-                         step: int, 
-                         phash_threshold: int, 
-                         metadata: Dict[str, Any], 
-                         labeling_dir: str):
-    
+def extract_frames_phash(
+    video_path: Path,
+    output_dir: Path,
+    max_frames: int,
+    step: int,
+    phash_threshold: int,
+    labeling_dir: str,
+):
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
-        raise ValueError(f"Problem for : {video_path}")
+        raise ValueError(f"Problem opening video: {video_path}")
 
-    selected = []
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     prev_frame = None
-    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    idx = 0
-    global_id_counter = 0
     json_data = []
 
-    while len(selected) < max_frames and idx < total:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    label_studio_base = "http://10.24.12.180:8083/ls/"
+
+    # Extract rat name safely
+    match = re.search(r"#\d+", str(video_path))
+    rat_name = match.group(0) if match else "rat"
+
+    frame_idx = 0
+    saved_count = 0
+
+    while saved_count < max_frames and frame_idx < total_frames:
         ret, frame = cap.read()
-        if not ret or frame is None:
+        if not ret:
             break
 
+        # Skip frames using step
+        if frame_idx % step != 0:
+            frame_idx += 1
+            continue
+
+        # Check similarity
         if prev_frame is None or phash_distance(prev_frame, frame) > phash_threshold:
-            i = len(selected)
-            parent_dict = {f"parent_{j+1}": p.name for j, p in enumerate(video_path.parents)}
-            metadata_filled = {key: (value.format(frame_num=i+1, **parent_dict) if isinstance(value, str) else value) for key, value in metadata.items()}
-            new_frame_name = f"frame" + "_".join(map(str, metadata_filled.values())) + f"_img{i+1}.png"
-            frame_filename = output_dir / new_frame_name
+
+            base_name = f"frame{rat_name}_img{saved_count + 1}"
+            frame_filename = output_dir / f"{base_name}.png"
+
+            # Ensure unique filename
             counter = 1
             while frame_filename.exists():
-                new_frame_name = f"frame" + "_".join(map(str, metadata_filled.values())) + f"_img{i+1}_{counter}.png"
-                frame_filename = output_dir / new_frame_name
+                frame_filename = output_dir / f"{base_name}_{counter}.png"
                 counter += 1
-            
-            print(frame_filename)
-            cv2.imwrite(str(frame_filename), frame)
-            label_studio_base_path = 'http://10.24.12.180:8083/ls/'
-            frame_data = {
-                "id": global_id_counter + 1,
-                "data": {
-                    "frame_num": f"{i+1}",
-                    "rel_img_path": str(frame_filename.relative_to(output_dir.parent)).replace('#', '%23'),
-                    "label_studio_img_path": f"{label_studio_base_path}{labeling_dir}/Images/{new_frame_name}",
-                    "source_video_filepath": str(video_path.resolve())
-                    }}
-            frame_data["data"].update(metadata_filled)
-            json_data.append(frame_data)
-            selected.append(frame)
-            prev_frame = frame
-            global_id_counter += 1
-        idx += step
-    cap.release()
 
+            cv2.imwrite(str(frame_filename), frame)
+
+            rel_path = frame_filename.relative_to(output_dir.parent)
+
+            json_data.append({
+                "id": len(json_data) + 1,
+                "data": {
+                    "frame_num": str(saved_count + 1),
+                    "rel_img_path": str(rel_path).replace("#", "%23"),
+                    "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
+                    "source_video_filepath": str(video_path.resolve()),
+                },
+            })
+
+            prev_frame = frame
+            saved_count += 1
+
+        frame_idx += 1
+
+    cap.release()
     return json_data
 
 
