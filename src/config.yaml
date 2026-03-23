@@ -3,7 +3,6 @@ experimenter: "Poe"
 
 
 # for image extraction
-random_state: 42
 num_frames_per_video: 25
 extract_method: "phash"
 
