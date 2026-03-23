@@ -8,15 +8,13 @@ from src.reaching_model_utils.config import load_config
 
 # ----------------------------------- setup path and parameters -------------------------------------
 
-# parameters
-videos = [""]
-
-# output directories
-
 cfg = load_config()
 
 json_output_path = cfg.paths.labeling / 'frames_metadata.json'
 frames_output_dir = cfg.paths.labeling  / "Images"
+
+
+videos = [""]
 
 
 # ----------------------------------- frame extraction -------------------------------------
