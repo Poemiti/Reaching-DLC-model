@@ -19,56 +19,66 @@ import re
 # ----------------------------------- for frame extraction -------------------------------------
 
 
-# uniform method
-def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, labeling_dir: str):
+def extract_frames_uniform(
+    video_path: Path,
+    output_dir: Path,
+    num_frames: int,
+    labeling_dir: str,
+):
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
-        print(f"Error opening video {video_path}")
-        return
-    
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    interval = total_frames / num_frames
-    global_id_counter = 0
-    json_data = []
+        raise ValueError(f"Error opening video {video_path}")
 
-    for i in range(num_frames):
-        cap.set(cv2.CAP_PROP_POS_FRAMES, i * interval)
-        ret, frame = cap.read() 
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if num_frames <= 0 or total_frames == 0:
+        cap.release()
+        return []
+
+    # Better uniform sampling
+    frame_indices = np.linspace(0, total_frames - 1, num_frames, dtype=int)
+
+    # Extract rat name (same logic as your other function)
+    match = re.search(r"#\d+", str(video_path))
+    rat_name = match.group(0) if match else "rat"
+    rat_name = rat_name.replace("#", "")
+
+    json_data = []
+    label_studio_base = "http://10.24.12.180:8083/ls/"
+
+    for i, frame_idx in enumerate(frame_indices):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int(frame_idx))
+        ret, frame = cap.read()
         if not ret:
             break
 
-        parent_dict = {f"parent_{j+1}": p.name for j, p in enumerate(video_path.parents)}
-        metadata_filled = {key: (value.format(frame_num=i+1, **parent_dict) if isinstance(value, str) else value) for key, value in metadata.items()}
-        filename_parts = [video_path.stem, f"uniform_frame_{i+1}"]
-        filename_parts += [f"{value}" for value in metadata_filled.values()]
-        new_frame_name = f"frame" + "_".join(map(str, metadata_filled.values())) + "_" + f"img{i+1}.png"
-        frame_filename = output_dir / new_frame_name
+        base_name = f"frame{rat_name}_img{i+1}"
+        frame_filename = output_dir / f"{base_name}.png"
 
+        # Ensure unique filename
         counter = 1
         while frame_filename.exists():
-            new_frame_name = f"frame" + "_".join(map(str, metadata_filled.values())) + "_" + f"img{i+1}{counter}.png"
-            frame_filename_new = Path(f"{labeling_dir}/Images/{new_frame_name}")
-            frame_filename = output_dir / new_frame_name
+            frame_filename = output_dir / f"{base_name}_{counter}.png"
             counter += 1
 
         cv2.imwrite(str(frame_filename), frame)
-        label_studio_base_path = 'http://10.24.12.180:8083/ls/'
-        frame_data = {
-            "id": global_id_counter + 1,
+
+        rel_path = frame_filename.relative_to(output_dir.parent)
+
+        json_data.append({
+            "id": len(json_data) + 1,
             "data": {
-                "frame_num": f"{i+1}", 
-                "rel_img_path": str(frame_filename.relative_to(output_dir.parent)).replace('#', '%23'),
-                "label_studio_img_path": f"{label_studio_base_path}{str(frame_filename_new).replace('#', '%23')}",
-                "source_video_filepath": str(video_path.resolve()),
-            }}
-        frame_data["data"].update(metadata_filled)
-        json_data.append(frame_data)
-        global_id_counter += 1  
+                "frame_num": str(i + 1),
+                "rel_img_path": str(rel_path).replace("#", ""),
+                "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
+                "source_video_filepath": str(video_path.resolve(),
+                ),
+            },
+        })
+
     cap.release()
-
-
     return json_data
-
 
 
 # phash method
@@ -103,6 +113,7 @@ def extract_frames_phash(
     # Extract rat name safely
     match = re.search(r"#\d+", str(video_path))
     rat_name = match.group(0) if match else "rat"
+    rat_name = rat_name.replace("#", "")
 
     frame_idx = 0
     saved_count = 0
@@ -137,7 +148,7 @@ def extract_frames_phash(
                 "id": len(json_data) + 1,
                 "data": {
                     "frame_num": str(saved_count + 1),
-                    "rel_img_path": str(rel_path).replace("#", "%23"),
+                    "rel_img_path": str(rel_path).replace("#", ""),
                     "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
                     "source_video_filepath": str(video_path.resolve()),
                 },

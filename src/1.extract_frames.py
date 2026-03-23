@@ -41,7 +41,6 @@ elif cfg.extract_method == 'phash':
         json_data = extract_frames_phash(video, frames_output_dir, 
                              max_frames=cfg.num_frames_per_video, 
                              step=10, phash_threshold=10, 
-                             metadata=metadata, 
                              labeling_dir=cfg.paths.labeling )
         
 
@@ -52,3 +51,5 @@ else:
 # save 
 with open(json_output_path, 'w') as json_file:
     json.dump(json_data, json_file, indent=4)
+
+print("Done !")
