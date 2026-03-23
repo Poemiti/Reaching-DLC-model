@@ -9,7 +9,7 @@ import shutil
 shutil.copy = shutil.copyfile
 
 import src.reaching_model_utils.video_utils as video_utils
-
+from src.reaching_model_utils.config import load_config
 
 # ------------------------------ verify gpu ------------------------------------
 
@@ -20,29 +20,19 @@ print(torch.cuda.get_device_name(0))
 
 # ----------------------------- setup parameters -----------------------------
 
-# training params
-optimizer = "AdamW"
-n_epochs = 300
-batch_size = 12
-num_frames_for_train = 400 
+cfg = load_config()
 
-
-# Names
-project = "DLC"
-experimenter = "Poe"
-
-
-# directories path
-root_dir = Path(".") 
-images_dir = root_dir / "Labeling/Images"
-annotation_dir = root_dir / "Labeling/Annotations"
+images_dir = cfg.paths.labeling / "Images"
+annotation_dir = cfg.paths.labeling / "Annotations"
 
 
 # files path
 info_skeleton = Path("./info_skeleton.yaml") 
-json_list_path = root_dir / "annotations_list.json"
-temp_video_path = root_dir/ "Temporary/output_video.avi"
+json_list_path = cfg.paths.labeling / "annotations_list.json"
+temp_video_path = cfg.paths.labeling / "Temporary/output_video.avi"
 
+date_str = datetime.today().strftime('%Y-%m-%d')
+project_name = f"{cfg.project}-{cfg.experimenter}-{date_str}"
 
 
 # --------------------------- Annotation ----------------------------
@@ -51,7 +41,7 @@ print("\nLoafing annotation\n")
 
 all_annotations, frame_map = [], {}
 
-txt_files = sorted(os.listdir(annotation_dir))[:num_frames_for_train]
+txt_files = sorted(os.listdir(annotation_dir))[:cfg.num_frames_for_train]
 for i, fname in enumerate(txt_files):
     with open(annotation_dir / fname, "r", encoding="utf-8") as f:
         annot = json.load(f)
@@ -77,17 +67,17 @@ print("\nCreating video from Labeling/Images\n")
 video_utils.create_video_from_frames(input_dir=images_dir, 
                                output_video_path=temp_video_path, 
                                fps=1, 
-                               num=num_frames_for_train, 
+                               num=cfg.num_frames_for_train, 
                                frame_map=frame_map)
 
 
 # --------------------------- Create DLC project ----------------------------
 
 print("\nCreating DLC project\n")
-deeplabcut.create_new_project(project=project, 
-                              experimenter=experimenter, 
+deeplabcut.create_new_project(project=cfg.project, 
+                              experimenter=cfg.experimenter, 
                               videos = [str(temp_video_path)], 
-                              working_directory = root_dir, 
+                              working_directory = cfg.paths.model, 
                               copy_videos=True, multianimal=False)
 
 
@@ -95,19 +85,18 @@ deeplabcut.create_new_project(project=project,
 
 print("\nUpdate config.yaml\n")
 
-date_str = datetime.today().strftime('%Y-%m-%d')
-config_path = root_dir / f"{project}-{experimenter}-{date_str}" / "config.yaml"
+config_path = cfg.paths.model / project_name / "config.yaml"
 
 with open(config_path, 'r') as f:
     config = yaml.safe_load(f)
 
 # 1. training params
 config.update({
-    'numframes2extract': num_frames_for_train,
-    'numframes2pick': num_frames_for_train,
+    'numframes2extract': cfg.num_frames_for_train,
+    'numframes2pick': cfg.num_frames_for_train,
     'pcutoff': 0.0,
     'dotsize': 5,
-    'batch_size': batch_size,
+    'batch_size': cfg.batch_size,
     'engine': 'pytorch'
 })
 
@@ -142,11 +131,11 @@ with open(config_path, 'w') as f:
 print("\nExtracting frames and converting annotation\n")
 
 # Extraction des images
-dlc_frames_dir = root_dir / f"{project}-{experimenter}-{date_str}" / "labeled-data" / "output_video"
+dlc_frames_dir = cfg.paths.model / project_name / "labeled-data" / "output_video"
 video_utils.extract_exact_frames_from_video(temp_video_path, dlc_frames_dir, frame_map)
 
 # Conversion des annotations en .csv
-csv_path = root_dir / f"{project}-{experimenter}-{date_str}" / "output.csv"
+csv_path = cfg.paths.model / project_name / "output.csv"
 
 with open(csv_path, mode='w', newline='') as file:
     writer = csv.writer(file)
@@ -169,11 +158,11 @@ with open(csv_path, mode='w', newline='') as file:
             x, y = (x / 100 * ow), (y / 100 * oh)
             bp = value.get('keypointlabels', [''])[0]
             conf = 1 if not np.isnan(x) and not np.isnan(y) else np.nan
-            writer.writerow([experimenter, video_ref, frame_id, bp, x, y, conf])
+            writer.writerow([cfg.experimenter, video_ref, frame_id, bp, x, y, conf])
 
 # Conversion .csv to .h5
 h5 = video_utils.csv_to_h5(str(csv_path))
-h5.to_hdf(str(dlc_frames_dir / f"CollectedData_{experimenter}.h5"), "keypoints")
+h5.to_hdf(str(dlc_frames_dir / f"CollectedData_{cfg.experimenter}.h5"), "keypoints")
 
 
 # -------------------------------- creating training dataset ----------------------------------
@@ -189,14 +178,14 @@ print("\nUpdating pytorch_config.yaml\n")
 
 # Modification de pytorch_config.yaml
 month_day = datetime.today().strftime("%b") + str(datetime.today().day)
-pytorch_config_path = root_dir / f"{project}-{experimenter}-{date_str}" / "dlc-models-pytorch" / "iteration-0" / f"DLC{month_day}-trainset95shuffle1" / "train" / "pytorch_config.yaml"
+pytorch_config_path = cfg.paths.model / project_name / "dlc-models-pytorch" / "iteration-0" / f"DLC{month_day}-trainset95shuffle1" / "train" / "pytorch_config.yaml"
 
 with open(pytorch_config_path, 'r') as f:
     config_py = yaml.safe_load(f)
-config_py['runner']['optimizer']['type'] = optimizer
-config_py['train_settings']['epochs'] = n_epochs
+config_py['runner']['optimizer']['type'] = cfg.optimizer
+config_py['train_settings']['epochs'] = cfg.n_epochs
 config_py['snapshot'] = 50
-config_py['train_settings']['batch_size'] = batch_size
+config_py['train_settings']['batch_size'] = cfg.batch_size
 
 with open(pytorch_config_path, 'w') as f:
     yaml.safe_dump(config_py, f)

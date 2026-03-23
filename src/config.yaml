@@ -1,0 +1,15 @@
+project: "DLC"
+experimenter: "Poe"
+
+
+optimizer: "AdamW"
+n_epochs: 300
+batch_size: 12
+num_frames_for_train: 400 
+
+
+paths:
+  data: ../data
+  labeling: ../data/labeling
+  model: ../data/model
+  evaluation: ../data/evaluation

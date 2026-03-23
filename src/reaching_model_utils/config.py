@@ -1,0 +1,34 @@
+from pathlib import Path
+from typing import Literal
+from pydantic import BaseModel, Field, validator
+import yaml
+
+
+class PathsConfig(BaseModel):
+    data: Path
+    labeling: Path
+    model: Path
+    evaluation: Path
+
+    # @field_validator("*", mode="before")
+    @validator("*")
+    @classmethod
+    def expand_paths(cls, v):
+        return Path(v).expanduser().resolve()
+
+
+class Config(BaseModel):
+    project: str
+    experimenter: str
+
+    optimizer: Literal["AdamW"]
+    n_epochs: int = Field(..., gt=0)
+    batch_size: int = Field(..., gt=0)
+    num_frames_for_train: int = Field(..., gt=0)
+
+    paths: PathsConfig
+
+
+def load_config(path: str = "config.yaml") -> Config:
+    with open(path, "r") as f:
+        return Config(**yaml.safe_load(f))
