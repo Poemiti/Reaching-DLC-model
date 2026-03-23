@@ -1,0 +1,25 @@
+bodyparts:
+  - shoulder
+  - wrist
+  - elbow
+  - finger_1
+  - finger_2
+  - finger_3
+  - hand
+  - muzzle
+  - soft_pad
+skeleton:
+  - - shoulder
+    - elbow
+  - - elbow
+    - wrist
+  - - wrist
+    - hand
+  - - hand
+    - finger_1
+  - - hand
+    - finger_2
+  - - hand
+    - finger_3
+  - - hand
+    - soft_pad
