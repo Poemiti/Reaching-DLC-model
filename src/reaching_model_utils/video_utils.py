@@ -19,7 +19,7 @@ import cv2
 
 
 # uniform method
-def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, metadata: Dict[str, Any], labeling_project_name: str):
+def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, metadata: Dict[str, Any], labeling_dir: str):
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         print(f"Error opening video {video_path}")
@@ -46,7 +46,7 @@ def extract_frames_uniform(video_path: Path, output_dir, num_frames: int, metada
         counter = 1
         while frame_filename.exists():
             new_frame_name = f"frame" + "_".join(map(str, metadata_filled.values())) + "_" + f"img{i+1}{counter}.png"
-            frame_filename_new = Path(f"{labeling_project_name}/Images/{new_frame_name}")
+            frame_filename_new = Path(f"{labeling_dir}/Images/{new_frame_name}")
             frame_filename = output_dir / new_frame_name
             counter += 1
 
@@ -86,7 +86,7 @@ def extract_frames_phash(video_path: Path,
                          step: int, 
                          phash_threshold: int, 
                          metadata: Dict[str, Any], 
-                         labeling_project_name: str):
+                         labeling_dir: str):
     
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
@@ -125,7 +125,7 @@ def extract_frames_phash(video_path: Path,
                 "data": {
                     "frame_num": f"{i+1}",
                     "rel_img_path": str(frame_filename.relative_to(output_dir.parent)).replace('#', '%23'),
-                    "label_studio_img_path": f"{label_studio_base_path}{labeling_project_name}/Images/{new_frame_name}",
+                    "label_studio_img_path": f"{label_studio_base_path}{labeling_dir}/Images/{new_frame_name}",
                     "source_video_filepath": str(video_path.resolve())
                     }}
             frame_data["data"].update(metadata_filled)
