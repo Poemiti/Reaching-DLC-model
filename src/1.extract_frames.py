@@ -58,7 +58,7 @@ elif cfg.extract_method == 'phash':
         print(f"\nPhash extraction of : {video.stem}")
         data = extract_frames_phash(video, frames_output_dir, 
                              max_frames=cfg.num_frames_per_video, 
-                             step=10, phash_threshold=10, 
+                             phash_threshold=11, 
                              labeling_dir=cfg.paths.labeling )
         json_data.extend(data)
         

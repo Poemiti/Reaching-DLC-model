@@ -20,11 +20,11 @@ import re
 
 
 def extract_frames_uniform(
-    video_path: Path,
-    output_dir: Path,
-    num_frames: int,
-    labeling_dir: str,
-):
+            video_path: Path,
+            output_dir: Path,
+            num_frames: int,
+            labeling_dir: str, ) -> list:
+            
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise ValueError(f"Error opening video {video_path}")
@@ -37,9 +37,10 @@ def extract_frames_uniform(
         return []
 
     # Better uniform sampling
-    frame_indices = np.linspace(0, total_frames - 1, num_frames, dtype=int)
+    # frame_indices = np.linspace(0, total_frames - 1, num_frames, dtype=int)
+    frame_indices = np.arange(0, total_frames, 63, dtype=int)
 
-    # Extract rat name (same logic as your other function)
+    # Extract rat name
     match = re.search(r"#\d+", str(video_path))
     rat_name = match.group(0) if match else "rat"
     rat_name = rat_name.replace("#", "")
@@ -70,7 +71,7 @@ def extract_frames_uniform(
             "id": len(json_data) + 1,
             "data": {
                 "frame_num": str(i + 1),
-                "rel_img_path": str(rel_path).replace("#", ""),
+                "rel_img_path": str(rel_path),
                 "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
                 "source_video_filepath": str(video_path.resolve(),
                 ),
@@ -91,13 +92,15 @@ def phash_distance(frame1, frame2):
 
 
 def extract_frames_phash(
-    video_path: Path,
-    output_dir: Path,
-    max_frames: int,
-    step: int,
-    phash_threshold: int,
-    labeling_dir: str,
-):
+            video_path: Path,
+            output_dir: Path,
+            max_frames: int,
+            phash_threshold: int,
+            labeling_dir: str,
+            fps: int = 125,
+            clip_duration_sec: int = 3,
+            keep_duration_sec: int = 1, ) -> list :
+            
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise ValueError(f"Problem opening video: {video_path}")
@@ -115,6 +118,10 @@ def extract_frames_phash(
     rat_name = match.group(0) if match else "rat"
     rat_name = rat_name.replace("#", "")
 
+    # Clip logic
+    clip_size = int(fps * clip_duration_sec)     # e.g. 375
+    keep_frames = int(fps * keep_duration_sec)   # e.g. 125
+
     frame_idx = 0
     saved_count = 0
 
@@ -123,45 +130,45 @@ def extract_frames_phash(
         if not ret:
             break
 
-        # Skip frames using step
-        if frame_idx % step != 0:
-            frame_idx += 1
-            continue
+        # Position inside current clip
+        frame_in_clip = frame_idx % clip_size
 
-        # Check similarity
-        if prev_frame is None or phash_distance(prev_frame, frame) > phash_threshold:
+        # Only keep frames from 0–1 sec of each clip
+        if frame_in_clip < keep_frames:
 
-            base_name = f"frame{rat_name}_img{saved_count + 1}"
-            frame_filename = output_dir / f"{base_name}.png"
+            # pHash filtering
+            if prev_frame is None or phash_distance(prev_frame, frame) > phash_threshold:
 
-            # Ensure unique filename
-            counter = 1
-            while frame_filename.exists():
-                frame_filename = output_dir / f"{base_name}_{counter}.png"
-                counter += 1
+                base_name = f"frame{rat_name}_img{saved_count + 1}"
+                frame_filename = output_dir / f"{base_name}.png"
 
-            cv2.imwrite(str(frame_filename), frame)
+                # Ensure unique filename
+                counter = 1
+                while frame_filename.exists():
+                    frame_filename = output_dir / f"{base_name}_{counter}.png"
+                    counter += 1
 
-            rel_path = frame_filename.relative_to(output_dir.parent)
+                cv2.imwrite(str(frame_filename), frame)
 
-            json_data.append({
-                "id": len(json_data) + 1,
-                "data": {
-                    "frame_num": str(saved_count + 1),
-                    "rel_img_path": str(rel_path),
-                    "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
-                    "source_video_filepath": str(video_path.resolve()),
-                },
-            })
+                rel_path = frame_filename.relative_to(output_dir.parent)
 
-            prev_frame = frame
-            saved_count += 1
+                json_data.append({
+                    "id": len(json_data) + 1,
+                    "data": {
+                        "frame_num": str(saved_count + 1),
+                        "rel_img_path": str(rel_path),
+                        "label_studio_img_path": f"{label_studio_base}{labeling_dir.stem}/Images/{frame_filename.name}",
+                        "source_video_filepath": str(video_path.resolve()),
+                    },
+                })
+
+                prev_frame = frame
+                saved_count += 1
 
         frame_idx += 1
 
     cap.release()
     return json_data
-
 
 
 
