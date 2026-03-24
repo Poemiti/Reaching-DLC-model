@@ -157,7 +157,7 @@ def extract_frames_phash(
                     "data": {
                         "frame_num": str(saved_count + 1),
                         "rel_img_path": str(rel_path),
-                        "label_studio_img_path": f"{label_studio_base}{labeling_dir.stem}/Images/{frame_filename.name}",
+                        "label_studio_img_path": f"{label_studio_base}/{labeling_dir.stem}/Images/{frame_filename.name}",
                         "source_video_filepath": str(video_path.resolve()),
                     },
                 })
