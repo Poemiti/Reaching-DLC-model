@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal
+from typing import Literal, List
 from pydantic import BaseModel, Field, validator
 import yaml
 
@@ -30,6 +30,7 @@ class Config(BaseModel):
     num_frames_for_train: int = Field(..., gt=0)
 
     paths: PathsConfig
+    video_to_extract: List[Path]
 
 
 def load_config(path: str = "config.yaml") -> Config:

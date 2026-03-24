@@ -1,9 +1,8 @@
 project: "DLC"
 experimenter: "Poe"
 
-
 # for image extraction
-num_frames_per_video: 25
+num_frames_per_video: 20
 extract_method: "phash"
 
 # for training
@@ -15,6 +14,44 @@ num_frames_for_train: 400
 
 paths:
   data: ../data
-  labeling: ../data/labeling
+  labeling: /media/filer2/T4b/Labeling/Model_Poe
   model: ../data/model
   evaluation: ../data/evaluation
+
+
+video_to_extract: 
+# 516
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#516/26062024/Rat_#516Ambidexter_20240626_BetaMT300_LeftHemiCHR_onlyL1LeftHand_C001H002S0001/Rat_#516Ambidexter_20240626_BetaMT300_LeftHemiCHR_onlyL1LeftHand_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#516/03072024/Rat_#516Ambidexter_20240703_BetaMT300_RightHemiCTRL_onlyL1LeftHand_C001H001S0002/Rat_#516Ambidexter_20240703_BetaMT300_RightHemiCTRL_onlyL1LeftHand_C001H001S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#516/04072024/Rat_#516Ambidexter_20240704_ContiMT300_RightHemiCTRL_onlyL1LeftHand_C001H002S0001/Rat_#516Ambidexter_20240704_ContiMT300_RightHemiCTRL_onlyL1LeftHand_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#516/04072024/Rat_#516Ambidexter_20240704_ContiMT300_RightHemiCTRL_onlyL1LeftHand_C001H001S0002/Rat_#516Ambidexter_20240704_ContiMT300_RightHemiCTRL_onlyL1LeftHand_C001H001S0002.avi
+# 517
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#517/03072024/Rat_#517Ambidexter_20240703_BetaMT300_LeftHemiCTRL_L1L25050_C001H001S0002/Rat_#517Ambidexter_20240703_BetaMT300_LeftHemiCTRL_L1L25050_C001H001S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#517/03072024/Rat_#517Ambidexter_20240703_BetaMT300_LeftHemiCTRL_L1L25050_C001H002S0001/Rat_#517Ambidexter_20240703_BetaMT300_LeftHemiCTRL_L1L25050_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#517/28062024/Rat_#517Ambidexter_20240628_ContiMT300_LeftHemiCTRL_L1L25050_C001H001S0002/Rat_#517Ambidexter_20240628_ContiMT300_LeftHemiCTRL_L1L25050_C001H001S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#517/20062024/Rat_#517Ambidexter_20240620_ContiMT300_RightHemiCHR_L1L25050_C001H002S0001/Rat_#517Ambidexter_20240620_ContiMT300_RightHemiCHR_L1L25050_C001H002S0001.avi
+# 519
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#519/24052024/Rat_#519Ambidexter_20240524_BeforeStimSession_NOstim_IpsiCTRL_onlyL1LeftHand_C001H001S0001/Rat_#519LeftHanded_20240524_NOstim_IpsiHemi_BeforeStimSession_onlyL1_C001H001S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#519/26052024/Rat_#519Ambidexter_20240526_BeforeStimSession_NOstim_ContraCHR_onlyL1LeftHand_C001H002S0001/Rat_#519LeftHanded_20240526_BeforeStimSession_NOstim_ContraCHR_L1_C001H002S0001.avi
+# 521
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#521/22052024/Rat_#521RightHanded_20240522_BetaMT300_contraCHR_L2_C001H002S0002/Rat_#521RightHanded_20240522_BetaMT300_contra_L2_C001H002S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#521/22052024/Rat_#521RightHanded_20240522_BetaMT300_ipsiCHR_L2_C001H001S0001/Rat_#521RightHanded_20240522_BetaMT300_ipsi_L2_C001H001S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#521/28052024/Rat_#521RightHanded_20240528_ContiMT300_contraCHR_L2_C001H002S0001/Rat_#521RightHanded_20240528_ContiMT300_contraCHR_L2_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#521/21052024/Rat_#521RightHanded_20240521_ContiMT300_IpsiCHR_L2_C001H001S0001/Rat_#521_20240521_ContiMT300_Ipsi_C001H001S0001.avi
+# 525
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#525/25062024/Rat_#525Ambidexter_20240625_BetaMT300_RightHemiCHR_L1L25050_C001H002S0002/Rat_#525Ambidexter_20240625_BetaMT300_RightHemiCHR_L1L25050_C001H002S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#525/04072024/Rat_#525Ambidexter_20240704_BetaMT300_LeftHemiCTRL_L1L25050_C001H001S0001/Rat_#525Ambidexter_20240704_BetaMT300_LeftHemiCTRL_L1L25050_C001H001S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#525/28062024/Rat_#525Ambidexter_20240628_ContiMT300_RightHemiCHR_L1L25050_C001H001S0001/Rat_#525Ambidexter_20240628_ContiMT300_RightHemiCHR_L1L25050_C001H001S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#525/25062024/Rat_#525Ambidexter_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H002S0002/Rat_#525Ambidexter_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H002S0002.avi
+# 527
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#527/24062024/Rat_#527RightHanded_20240624_BetaMT300_RightHemiCTRL_L1L25050_Laser3070_C001H002S0002/Rat_#527RightHanded_20240624_BetaMT300_RightHemiCTRL_L1L25050_Laser3070_C001H002S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#527/20062024/Rat_#527RightHanded_20240620_BetaMT300_RightHemiCTRL_L1L27030_C001H001S0001/Rat_#527RightHanded_20240620_BetaMT300_RightHemiCTRL_L1L25050_C001H001S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#527/25062024/Rat_#527RightHanded_20240625_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H001S0002/Rat_#527RightHanded_20240625_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H001S0002.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#527/04072024/Rat_#527RightHanded_20240704_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H002S0002/Rat_#527RightHanded_20240704_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H002S0002.avi
+# 531
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/04072024/Rat_#531LeftHanded_20240704_BetaMT300_LeftHemiCHR_L1L25050_C001H001S0003/Rat_#531LeftHanded_20240704_BetaMT300_LeftHemiCHR_L1L25050_C001H001S0003.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/02072024/Rat_#531LeftHanded_20240702_BetaMT300_RightHemiCHR_L1L25050_C001H002S0001/Rat_#531LeftHanded_20240702_BetaMT300_RightHemiCHR_L1L25050_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/22052024/Rat_#531LeftHanded_20240522_ContiMT300_contraCHR_L1L25050_C001H002S0001/Rat_#531LeftHanded_20240522_ContiMT300_contra_L1L2_C001H002S0001.avi
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/25062024/Rat_#531LeftHanded_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H001S0002/Rat_#531LeftHanded_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H001S0002.avi
+
+

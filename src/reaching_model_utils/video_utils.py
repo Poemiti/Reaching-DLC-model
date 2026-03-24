@@ -108,7 +108,7 @@ def extract_frames_phash(
     json_data = []
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    label_studio_base = "http://10.24.12.180:8083/ls/"
+    label_studio_base = "http://10.24.12.180:8083/ls"
 
     # Extract rat name safely
     match = re.search(r"#\d+", str(video_path))
@@ -148,7 +148,7 @@ def extract_frames_phash(
                 "id": len(json_data) + 1,
                 "data": {
                     "frame_num": str(saved_count + 1),
-                    "rel_img_path": str(rel_path).replace("#", ""),
+                    "rel_img_path": str(rel_path),
                     "label_studio_img_path": f"{label_studio_base}{labeling_dir}/Images/{frame_filename.name}",
                     "source_video_filepath": str(video_path.resolve()),
                 },

@@ -3,7 +3,9 @@ import yaml
 import json
 from reaching_model_utils.video_utils import extract_frames_uniform, extract_frames_phash
 from reaching_model_utils.config import load_config
-
+from tqdm import tqdm
+import sys
+import os
 
 
 # ----------------------------------- setup path and parameters -------------------------------------
@@ -17,31 +19,48 @@ annotation_output_dir = cfg.paths.labeling  / "Annotations"
 frames_output_dir.mkdir(parents=True, exist_ok=True)
 annotation_output_dir.mkdir(parents=True, exist_ok=True)
 
-videos = [
-    Path("/media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#525/25062024/Rat_#525Ambidexter_20240625_BetaMT300_RightHemiCHR_L1L25050_C001H002S0002/Rat_#525Ambidexter_20240625_BetaMT300_RightHemiCHR_L1L25050_C001H002S0002.avi"),
-    ]
+
+# ----------------------------------- verification step -------------------------------------
+
+# verification videos
+for v in cfg.video_to_extract : 
+    v.exists()
+
+if len(os.listdir(frames_output_dir)) != 0 : 
+    res = input("The output folder is not empty, do you want to overwrite ? (y/n) : ")
+    if res == "n" : 
+        print("Extraction cancelled, stop!")
+        sys.exit()
+
+print("================================================")
+print(f"Output folder: {str(frames_output_dir)}")
+print(f"Number of video: {len(cfg.video_to_extract)}")
+print(f"Number of frame that will be extracted: {len(cfg.video_to_extract)*cfg.num_frames_per_video}")
+print(f"Extracting method used: {cfg.extract_method}")
+print("================================================")
 
 
-# ----------------------------------- frame extraction -------------------------------------
+# # ----------------------------------- frame extraction -------------------------------------
 
-with (cfg.paths.labeling  / "project_info.yaml").open("r") as f:
-    metadata = yaml.safe_load(f)
+json_data = []
 
 if cfg.extract_method == 'uniform':
-    for video in videos:
+    for video in cfg.video_to_extract:
         print(f"\nUniform extraction of : {video.stem}")
-        json_data = extract_frames_uniform(video, frames_output_dir, cfg.num_frames_per_video, metadata, 
+        data = extract_frames_uniform(video, frames_output_dir, cfg.num_frames_per_video, 
                              labeling_dir=cfg.paths.labeling )
+        json_data.extend(data)
 
 
 
 elif cfg.extract_method == 'phash':
-    for video in videos:
+    for video in cfg.video_to_extract:
         print(f"\nPhash extraction of : {video.stem}")
-        json_data = extract_frames_phash(video, frames_output_dir, 
+        data = extract_frames_phash(video, frames_output_dir, 
                              max_frames=cfg.num_frames_per_video, 
                              step=10, phash_threshold=10, 
                              labeling_dir=cfg.paths.labeling )
+        json_data.extend(data)
         
 
 else:
