@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-import imagehash
 from PIL import Image
 import cv2
 import re
@@ -84,6 +83,8 @@ def extract_frames_uniform(
 
 # phash method
 def phash_distance(frame1, frame2):
+    import imagehash
+
     pil1 = Image.fromarray(cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB))
     pil2 = Image.fromarray(cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB))
     h1 = imagehash.phash(pil1)
@@ -217,6 +218,16 @@ def extract_exact_frames_from_video(video_path: Path, output_dir: Path, frame_ma
         if not ret: break
         cv2.imwrite(str(output_dir / frame_map.get(str(i), f"{i}.png")), frame)
     cap.release()
+
+
+
+
+def copy_frames_to_dir(input_dir: Path, output_dir: Path) -> None: 
+    import shutil
+    
+    for frame_path in input_dir.glob("*.png"):
+        dest_path = output_dir / frame_path.name
+        shutil.copy(frame_path, dest_path)
 
 
 

@@ -9,6 +9,7 @@ class PathsConfig(BaseModel):
     labeling: Path
     model: Path
     evaluation: Path
+    temporary: Path
 
     # @field_validator("*", mode="before")
     @validator("*")

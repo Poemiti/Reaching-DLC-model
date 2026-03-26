@@ -17,6 +17,7 @@ paths:
   labeling: /media/filer2/T4b/Labeling/Model_Poe
   model: ../data/model
   evaluation: ../data/evaluation
+  temporary: ../data/temporary
 
 
 video_to_extract: 
@@ -50,8 +51,5 @@ video_to_extract:
  - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#527/04072024/Rat_#527RightHanded_20240704_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H002S0002/Rat_#527RightHanded_20240704_ContiMT300_LeftHemiCTRL_L1L25050_Laser3070_C001H002S0002.avi
 # 531
  - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/04072024/Rat_#531LeftHanded_20240704_BetaMT300_LeftHemiCHR_L1L25050_C001H001S0003/Rat_#531LeftHanded_20240704_BetaMT300_LeftHemiCHR_L1L25050_C001H001S0003.avi
- - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/02072024/Rat_#531LeftHanded_20240702_BetaMT300_RightHemiCHR_L1L25050_C001H002S0001/Rat_#531LeftHanded_20240702_BetaMT300_RightHemiCHR_L1L25050_C001H002S0001.avi
- - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/22052024/Rat_#531LeftHanded_20240522_ContiMT300_contraCHR_L1L25050_C001H002S0001/Rat_#531LeftHanded_20240522_ContiMT300_contra_L1L2_C001H002S0001.avi
- - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/25062024/Rat_#531LeftHanded_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H001S0002/Rat_#531LeftHanded_20240625_ContiMT300_RightHemiCHR_L1L25050_C001H001S0002.avi
-
+ - /media/filer2/T4b/Datasets/Rats/Photron_Video/Raphael2024/#531/03072024/Rat_#531LeftHanded_20240703_ContiMT300_LeftHemiCHR_L1L25050_C001H001S0002/Rat_#531LeftHanded_20240703_ContiMT300_LeftHemiCHR_L1L25050_C001H001S0002.avi
 
