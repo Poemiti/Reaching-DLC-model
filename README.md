@@ -1,1 +1,2 @@
-## DLC model Refinemenent on reaching task videos
+## DLC model training on reaching task videos
+
