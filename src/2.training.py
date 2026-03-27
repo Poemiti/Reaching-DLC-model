@@ -9,6 +9,7 @@ shutil.copy = shutil.copyfile
 
 import reaching_model_utils.video_utils as video_utils
 from reaching_model_utils.config import load_config
+import reaching_model_utils.training_utils as training_utils
 
 # ------------------------------ verify gpu ------------------------------------
 
@@ -19,7 +20,7 @@ print(torch.cuda.get_device_name(0))
 
 # ----------------------------- setup parameters -----------------------------
 
-cfg = load_config()
+cfg = load_config("../config.yaml")
 
 date_str = datetime.today().strftime('%Y-%m-%d')
 project_name = f"{cfg.project}-{cfg.experimenter}-{date_str}"
@@ -31,7 +32,7 @@ dlc_frames_dir = cfg.paths.model / project_name / "labeled-data" / "output_video
 
 
 # files path
-info_skeleton = Path("./info_skeleton.yaml") 
+info_skeleton = Path("../info_skeleton.yaml") 
 json_list_path = cfg.paths.model / "annotations_list.json"
 temp_video_path = cfg.paths.temporary / "output_video.avi"
 annotation_path = cfg.paths.labeling / "frames_annotations_meta.json"
@@ -46,36 +47,17 @@ single_file_annotation = len(os.listdir(annotation_dir)) != 0
 
 print("\nLoading annotation\n")
 
-all_annotations, frame_map = [], {}
-
 if single_file_annotation : 
     print("Annotation directory is NOT empty")
+    all_annotations = []
     txt_files = sorted(os.listdir(annotation_dir))[:cfg.num_frames_for_train]
+
     for i, fname in enumerate(txt_files):
         with open(annotation_dir / fname, "r", encoding="utf-8") as f:
             annot = json.load(f)
         all_annotations.append(annot)
-        rel_img = annot.get('task', {}).get('data', {}).get('rel_img_path')
-        if rel_img:
-            frame_name = os.path.basename(rel_img)
-            frame_map[str(i)] = frame_name
-            full_img = images_dir / rel_img
-            target_img = images_dir / frame_name
-            if not target_img.exists() and full_img.exists():
-                shutil.copy(full_img, target_img)
 
-
-else : 
-    print(f"Annotation directory is empty, we will be using :\n{annotation_path}\n")
-    with open(annotation_path, "r") as f : 
-        all_annotations = json.load(f)
-    
-    for annot in all_annotations : 
-        annot_id = annot["id"]
-        rel_img = annot.get('data', {}).get('rel_img_path')
-        frame_name = os.path.basename(rel_img)
-        frame_map[annot_id] = frame_name
-
+frame_map = training_utils.build_frame_map(all_annotations, images_dir, single_file_annotation)
 
 with open(json_list_path, 'w', encoding='utf-8') as f:
     json.dump(all_annotations, f, indent=4, ensure_ascii=False)
@@ -125,25 +107,11 @@ config.update({
 with open(info_skeleton, "r") as f:
     info_bs = yaml.safe_load(f)
 
+original_bodyparts = info_bs.get('bodyparts', [])
 original_skeleton = info_bs.get('skeleton', [])
+annotated_bodyparts = training_utils.extract_bodyparts(all_annotations, single_file_annotation)
 
-if single_file_annotation : 
-    annotated_bodyparts = {
-        result.get('value', {}).get('keypointlabels', [])[0]
-        for annot in all_annotations
-        for result in annot.get('result', [])
-        if result.get('type') == 'keypointlabels'
-    }
-
-else : 
-    annotated_bodyparts = {
-        result.get('value', {}).get('keypointlabels', [])[0]
-        for annot in all_annotations
-        for result in annot["annotations"][0].get('result', [])
-        if result.get('type') == 'keypointlabels'
-    }
-
-config['bodyparts'] = sorted(annotated_bodyparts)
+config['bodyparts'] = original_bodyparts
 config['skeleton'] = [
     link for link in original_skeleton
     if isinstance(link, list)
@@ -168,50 +136,8 @@ else :
     video_utils.copy_frames_to_dir(images_dir, dlc_frames_dir)
 
 # Conversion des annotations en .csv
-with open(csv_path, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['labeller', 'video_reference', 'frame_id', 'bodypart', 'x', 'y', 'confidence'])
-    
-    if single_file_annotation : 
-        for annotation in all_annotations:
-            task_data = annotation.get('task', {}).get('data', {})
-            video_ref = os.path.basename(os.path.dirname(task_data.get('source_video_filepath', '')))
-            frame_id = os.path.basename(task_data.get('rel_img_path', f"{task_data.get('frame_num', 0)}.png"))
-            
-            for result in annotation.get('result', []):
-                if result.get('type') != 'keypointlabels':
-                    continue
-                
-                value = result.get('value', {})
-                x = value.get('x', np.nan)
-                y = value.get('y', np.nan)
-                ow = result.get('original_width', 1)
-                oh = result.get('original_height', 1)
-                x, y = (x / 100 * ow), (y / 100 * oh)
-                bp = value.get('keypointlabels', [''])[0]
-                conf = 1 if not np.isnan(x) and not np.isnan(y) else np.nan
-                writer.writerow([cfg.experimenter, video_ref, frame_id, bp, x, y, conf])
-
-    else : 
-        print(f"Annotation directory is empty, we will be using :\n{annotation_path}\n")
-        for annotation in all_annotations:
-            task_data = annotation.get('data', {})
-            video_ref = os.path.basename(os.path.dirname(task_data.get('source_video_filepath', '')))
-            frame_id = os.path.basename(task_data.get('rel_img_path', f"{task_data.get('frame_num', 0)}.png"))
-            
-            for result in annotation["annotations"][0].get('result', []):
-                if result.get('type') != 'keypointlabels':
-                    continue
-                
-                value = result.get('value', {})
-                x = value.get('x', np.nan)
-                y = value.get('y', np.nan)
-                ow = result.get('original_width', 1)
-                oh = result.get('original_height', 1)
-                x, y = (x / 100 * ow), (y / 100 * oh)
-                bp = value.get('keypointlabels', [''])[0]
-                conf = 1 if not np.isnan(x) and not np.isnan(y) else np.nan
-                writer.writerow([cfg.experimenter, video_ref, frame_id, bp, x, y, conf])
+training_utils.write_dlc_csv(csv_path, all_annotations, cfg,
+                             original_bodyparts, single_file_annotation)
 
 # Conversion .csv to .h5
 h5 = video_utils.csv_to_h5(str(csv_path))
@@ -238,6 +164,7 @@ with open(pytorch_config_path, 'r') as f:
 config_py['runner']['optimizer']['type'] = cfg.optimizer
 config_py['train_settings']['epochs'] = cfg.n_epochs
 config_py['snapshot'] = 50
+config_py['runner']['eval_interval'] = 1
 config_py['train_settings']['batch_size'] = cfg.batch_size
 
 with open(pytorch_config_path, 'w') as f:
@@ -262,4 +189,4 @@ print(f"Training time = {stop - start:.2f} sec")
 
 deeplabcut.evaluate_network(config_path, Shuffles=[1], 
                             plotting=True,
-                            show_errors=True)
+                            per_keypoint_evaluation=True)

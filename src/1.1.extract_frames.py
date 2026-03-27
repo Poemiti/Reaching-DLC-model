@@ -10,7 +10,7 @@ import os
 
 # ----------------------------------- setup path and parameters -------------------------------------
 
-cfg = load_config()
+cfg = load_config("../config.yaml")
 
 json_output_path = cfg.paths.labeling / 'frames_metadata.json'
 frames_output_dir = cfg.paths.labeling  / "Images"

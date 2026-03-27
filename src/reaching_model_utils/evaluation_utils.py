@@ -27,9 +27,9 @@ def extract_dlc_folder(path):
     path = os.path.normpath(path)
     parts = path.split(os.sep)
     
-    # Search for pattern DLC-{experimenter}-{date}
+    # Search for pattern {project}-{experimenter}-{date}
     for part in parts:
-        if re.match(r"-\d{4}-\d{2}-\d{2}", part):
+        if re.fullmatch(r"[A-Za-z]+-[A-Za-z]+-\d{4}-\d{2}-\d{2}", part):
             return part
     
     return "Unknow-model"
@@ -63,5 +63,16 @@ def plot_metrics(output_dir, df, title) :
     ax.bar_label(ax.containers[1])
     plt.title(title)
     plt.ylabel("Error (px)")
+    plt.savefig(output_dir / f"{title}.png")
+    plt.close()
+
+
+def plot_bodypart_error(output_dir, df, title) : 
+    ax = sns.barplot(data=df, x="bodypart", y="value", hue="type")
+    ax.bar_label(ax.containers[0])
+    ax.bar_label(ax.containers[1])
+    ax.tick_params(axis='x', rotation=45)
+    plt.title(title)
+    plt.ylabel("Error")
     plt.savefig(output_dir / f"{title}.png")
     plt.close()

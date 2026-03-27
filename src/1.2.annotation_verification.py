@@ -11,7 +11,7 @@ from collections import Counter
 
 # ----------------------------------- setup path and parameters -------------------------------------
 
-cfg = load_config()
+cfg = load_config("../config.yaml")
 
 annotation_path = cfg.paths.labeling / "frames_annotations_meta.json"
 
