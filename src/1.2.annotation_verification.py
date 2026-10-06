@@ -14,13 +14,15 @@ from collections import Counter
 cfg = load_config("../config.yaml")
 
 annotation_path = cfg.paths.labeling / "frames_annotations_meta.json"
+bodyparts_path = Path("../info_skeleton V2.yaml")
 
+with open(bodyparts_path, "r") as f : 
+    bodyparts_cfg = json.load(f)
 
 with open(annotation_path, "r") as f : 
     annotations = json.load(f)
 
-expected_bodyparts = ["elbow", "finger_1", "finger_2", "finger_3", 
-                      "hand", "muzzle", "shoulder", "soft_pad", "wrist"]
+expected_bodyparts = bodyparts_cfg["bodyparts"]
 wrong_annotations = {}
 
 for annot in annotations : 
