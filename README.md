@@ -94,7 +94,7 @@ Extract frames from the videos absolute path listed in `video_to_extract` from t
 The script will extract the number of frames set in `num_frames_per_video` following the `extract_method` set. 2 Methods are available : **phash** and **uniform**.  
 
 After extracting the frame, those frame must be labeled using **Label Studio**.   
-After labelling, export the data using the `export` button on the top left. Then select the first option given. The file exported must be stored in the labeling path set in the config file, and the name must be `frames_annotations_meta.json`. (e.g. */media/filer2/T4b/Labeling/Model_Poe/frames_annotations_meta.json*)
+After labelling, export the data using the `export` button on the top right. Then select the first option given. The file exported must be stored in the labeling path set in the config file, and the name must be `frames_annotations_meta.json`. (e.g. */media/filer2/T4b/Labeling/Model_Poe/frames_annotations_meta.json*)
 
 *(The name can be changed, but you will have to change the code as well)*
 

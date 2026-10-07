@@ -56,6 +56,9 @@ if single_file_annotation :
         with open(annotation_dir / fname, "r", encoding="utf-8") as f:
             annot = json.load(f)
         all_annotations.append(annot)
+else: 
+    with open(annotation_path, "r") as a:
+        all_annotations = json.load(a)
 
 frame_map = training_utils.build_frame_map(all_annotations, images_dir, single_file_annotation)
 
