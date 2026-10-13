@@ -31,17 +31,23 @@ dlc_frames_dir = cfg.paths.model / project_name / "labeled-data" / "output_video
 
 
 
-# files path
-info_skeleton = Path("../info_skeleton.yaml") 
+# input path
+info_skeleton = Path("../info_skeleton_V3.yaml") 
+exclusion_path = Path("../annotations_exclusion_list.yaml")
+annotation_path = cfg.paths.labeling / "frames_annotations_meta.json"
+
+
+# output path
 json_list_path = cfg.paths.model / "annotations_list.json"
 temp_video_path = cfg.paths.temporary / "output_video.avi"
-annotation_path = cfg.paths.labeling / "frames_annotations_meta.json"
 csv_path = cfg.paths.model / project_name / "output.csv"
 config_path = cfg.paths.model / project_name / "config.yaml"
 
 
 single_file_annotation = len(os.listdir(annotation_dir)) != 0
 
+with open(exclusion_path, "r") as f : 
+    exclusion_cfg = yaml.safe_load(f)
 
 # --------------------------- Annotation ----------------------------
 
@@ -55,10 +61,20 @@ if single_file_annotation :
     for i, fname in enumerate(txt_files):
         with open(annotation_dir / fname, "r", encoding="utf-8") as f:
             annot = json.load(f)
-        all_annotations.append(annot)
+
+        if not annot["id"] in exclusion_cfg:  # only add the annotation that were not excluded
+            all_annotations.append(annot)
+
+
 else: 
     with open(annotation_path, "r") as a:
-        all_annotations = json.load(a)
+        all_annotations_temp = json.load(a)
+        all_annotations = []
+
+    for annot in all_annotations_temp: 
+        if not annot["id"] in exclusion_cfg: 
+            all_annotations.append(annot) 
+
 
 frame_map = training_utils.build_frame_map(all_annotations, images_dir, single_file_annotation)
 

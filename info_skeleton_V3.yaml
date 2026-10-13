@@ -1,0 +1,45 @@
+bodyparts:
+  - wrist
+  - Hand_base
+  - Base_finger_2
+  - Base_finger_3
+  - Phalanx_1_finger_2
+  - Phalanx_1_finger_3
+  - finger_1
+  - finger_2
+  - finger_3
+  - hand
+  - soft_pad
+  - Front_PAD_corner
+  - Back_PAD_corner
+  - Lever_ball
+  - Lever_base
+  - Lever_corner
+
+skeleton:
+  - - wrist
+    - Hand_base
+
+  - - Hand_base
+    - finger_1
+
+  - - Hand_base
+    - Base_finger_2
+  - - Base_finger_2
+    - Phalanx_1_finger_2
+  - - Phalanx_1_finger_2
+    - finger_2
+
+  - - Hand_base
+    - Base_finger_3
+  - - Base_finger_3
+    - Phalanx_1_finger_3
+  - - Phalanx_1_finger_3
+    - finger_3
+
+  - - Hand_base
+    - soft_pad
+
+  - - Lever_base
+    - Lever_corner
+
