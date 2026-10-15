@@ -55,9 +55,9 @@ perbody_evaluation_path = evaluation_utils.select_file(root, title="Select Evalu
 
 
 
-# model_learning_stat_path = "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-main/data/model/DLC-Poe-2026-03-26/dlc-models-pytorch/iteration-0/DLCMar26-trainset95shuffle1/train/learning_stats.csv"
-# model_evaluation_path = "" # "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-main/data/model/DLC-Poe-2026-03-26/evaluation-results-pytorch/iteration-0/DLCMar26-trainset95shuffle1/DLC_Resnet50_DLCMar26shuffle1_snapshot_260-results.csv"
-# perbody_evaluation_path = "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-main/data/model/DLC-Poe-2026-03-26/evaluation-results-pytorch/iteration-0/DLCMar26-trainset95shuffle1/DLC_Resnet50_DLCMar26shuffle1_snapshot_260-keypoint-results.csv"
+# model_learning_stat_path = "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-exclusion_list/data/model/DLC_Skilled_reaching-Raphael-2026-10-14/dlc-models-pytorch/iteration-0/DLC_Skilled_reachingOct14-trainset95shuffle1/train/learning_stats.csv"
+# model_evaluation_path = "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-exclusion_list/data/model/DLC_Skilled_reaching-Raphael-2026-10-14/evaluation-results-pytorch/iteration-0/CombinedEvaluation-results.csv"
+# perbody_evaluation_path = "/media/filer2/T4b/UserFolders/Poemiti/Reaching-DLC-model-exclusion_list/data/model/DLC_Skilled_reaching-Raphael-2026-10-14/evaluation-results-pytorch/iteration-0/DLC_Skilled_reachingOct14-trainset95shuffle1/DLC_Resnet50_DLC_Skilled_reachingOct14shuffle1_snapshot_027-keypoint-results.csv"
 
 # create folder in which the evaluation plot will be saved
 
@@ -118,7 +118,7 @@ if model_evaluation_path:
 
 if perbody_evaluation_path: 
 
-    def build_bodypart_error(df, train, testt):
+    def build_bodypart_error(df, train, test):
         df.extend([
             {
                 "bodypart": bp,

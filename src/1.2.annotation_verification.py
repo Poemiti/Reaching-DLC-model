@@ -1,12 +1,9 @@
 from pathlib import Path
 import yaml
 import json
-from reaching_model_utils.video_utils import extract_frames_uniform, extract_frames_phash
 from reaching_model_utils.config import load_config
-from tqdm import tqdm
 import sys
 import os
-import pandas as pd
 from collections import Counter
 
 # ----------------------------------- setup path and parameters -------------------------------------
