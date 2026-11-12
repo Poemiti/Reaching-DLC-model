@@ -93,7 +93,22 @@ It creates the folder system if it doesn`t already exist
 Extract frames from the videos absolute path listed in `video_to_extract` from the config.yaml.  
 The script will extract the number of frames set in `num_frames_per_video` following the `extract_method` set. 2 Methods are available : **phash** and **uniform**.  
 
-After extracting the frame, those frame must be labeled using **Label Studio**.   
+After extracting the frame, those frame must be labeled using **Label Studio**.  
+In order to label them, the frames must be stored in the `mamserverssd/Server/.label_studio_media/` in order for label studio to find the images. Then import the frames using a JSON file with this format :  
+```json
+[
+    {
+        "id": 1,
+        "data": {
+            "frame_num": "1",
+            "rel_img_path": "Images/frame_num1.png",
+            "label_studio_img_path": "http://10.24.12.180:8083/ls/Model_name/Images/frame_num1.png",
+            "source_video_filepath": "/source/path/to/video/from/wich/frame/comes/from"
+        }
+    },
+]
+```
+
 After labelling, export the data using the `export` button on the top right. Then select the first option given. The file exported must be stored in the labeling path set in the config file, and the name must be `frames_annotations_meta.json`. (e.g. */media/filer2/T4b/Labeling/Model_Poe/frames_annotations_meta.json*)
 
 *(The name can be changed, but you will have to change the code as well)*
